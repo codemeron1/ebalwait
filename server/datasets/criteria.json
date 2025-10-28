@@ -1,0 +1,74 @@
+{
+    "data": [
+        {
+            "text": "Quality of Work",
+            "type": "scale",
+            "role" : [3,4],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Timeliness",
+            "type": "scale",
+            "role" : [3,4],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Cooperation and Communication",
+            "type": "scale",
+            "role" : [3,4,5],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Initiative and Independence",
+            "type": "scale",
+            "role" : [2,3,4,5],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Code Quality and Accuracy",
+            "type": "scale",
+            "role" : [5],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Commit Frequency and Contribution",
+            "type": "scale",
+            "role" : [5],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Leadership and Decision Making",
+            "type": "scale",
+            "role" : [1,2],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Communication and Coordination",
+            "type": "scale",
+            "role" : [1,2],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Fairness and Conflict Resolution",
+            "type": "scale",
+            "role" : [1,2],
+            "scaleMin": 1,
+            "scaleMax": 5
+        },
+        {
+            "text": "Motivation and Accountability",
+            "type": "scale",
+            "role" : [1,2],
+            "scaleMin": 1,
+            "scaleMax": 5
+        }
+    ]
+}
