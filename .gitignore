@@ -1,0 +1,9 @@
+server/node_modules
+server/.env
+server/fbKey.json
+
+evaluator/node_modules
+evaluator/.github
+evaluator/.vscode
+evaluator/.env
+server/import-student-template-4A.csv
