@@ -3,7 +3,7 @@
  */
 import axios from "axios";
 
-const RegisterView = () => {
+const Register = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
 
     const handleRegister = (e: React.FormEvent) => {
@@ -26,4 +26,4 @@ const RegisterView = () => {
     )
 }
 
-export default RegisterView;
+export default Register;

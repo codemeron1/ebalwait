@@ -98,7 +98,7 @@ const FeedbackCard = ({ result }) => {
 }
 
 
-const ResultsView = () => {
+const Result = () => {
   // State to manage the selected week
   const [selectedWeek, setSelectedWeek] = useState("Week 1 (Oct 20-26)");
 
@@ -149,4 +149,4 @@ const ResultsView = () => {
   )
 }
 
-export default ResultsView;
+export default Result;

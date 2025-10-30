@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { ModeToggle } from './mode-toggle';
 
 const Layout = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -27,6 +28,8 @@ const handleLogout = () => {}
                 <Link to="/rate" className="text-gray-700 hover:text-blue-700">Evaluate</Link>
                 <Link to="/results" className="text-gray-700 hover:text-blue-700">My Evaluation Result</Link>
                 <Link to="/" className="text-gray-700 hover:text-blue-700">Logout</Link>
+
+                <ModeToggle />
               </div>
             </div>
             
@@ -72,7 +75,7 @@ const handleLogout = () => {}
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 overflow-hidden">
         <Outlet />
       </main>
     </div>
