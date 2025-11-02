@@ -152,9 +152,9 @@ const TeamMembersCard = ({ teamMembersData, isLoading }: { teamMembersData: any[
 }
 
 const Home = () => {
-    const [teamMembers, setTeamMembers] = useState(null);
-    const [pendingEvaluations, setPendingEvaluations] = useState(null);
-    const [evaluationSummary, setEvaluationSummary] = useState(null);
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [pendingEvaluations, setPendingEvaluations] = useState([]);
+    const [evaluationSummary, setEvaluationSummary] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const loadInitialData = () => {

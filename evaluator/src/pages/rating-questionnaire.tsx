@@ -7,8 +7,8 @@ const RatingQuestionnaire = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
     const location = useLocation();
     const navigate = useNavigate();
-    const [data, setData] = useState<any>(location.state?.questionnaire || null);
-    const [memberData, setMemberData] = useState<any>(location.state?.ratee || null);
+    const [data] = useState<any>(location.state?.questionnaire || null);
+    const [memberData] = useState<any>(location.state?.ratee || null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const roles = useRef(['Team Manager', 'Lead Programmer',
         'API Tester', 'Documentation Specialist', 'API Programmer']);
