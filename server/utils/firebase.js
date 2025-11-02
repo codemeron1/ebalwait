@@ -6,9 +6,9 @@ export const getClassDates = async () => {
     const classDateQuery = await firebaseDB.collection('evaluationDate').get();
     const classDates = [];
     classDateQuery.forEach((userDoc) => {
-        const data = doc.data();
+        const data = userDoc.data();
         classDates.push({
-            documentId: doc.id,
+            documentId: userDoc.id,
             date: data.date,
         });
     });
