@@ -1,5 +1,5 @@
 import { firebaseDB } from '../firebase.js';
-import { UserData, ClassDates } from '../types/types.js';
+// import { UserData, ClassDates } from '../types/types.js';
 
 
 export const getClassDates = async () => {
