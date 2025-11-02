@@ -34,7 +34,7 @@ const mockEvaluationSummaryData = [
     },
 
 ];
-const PendingEvaluationCard = ({ evaluationData }) => {
+const PendingEvaluationCard = ({ evaluationData }: {evaluationData: any[]}) => {
     return (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
             <div className="flex items-center gap-2 mb-4">
@@ -79,7 +79,7 @@ const PendingEvaluationCard = ({ evaluationData }) => {
         </div>
     );
 }
-const EvaluationSummaryCard = ({ evaluationSummaryData }) => {
+const EvaluationSummaryCard = ({ evaluationSummaryData } : { evaluationSummaryData: any[] }) => {
     return (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
             <div className="flex items-center gap-2 mb-4">
@@ -119,7 +119,7 @@ const EvaluationSummaryCard = ({ evaluationSummaryData }) => {
         </div>
     );
 }
-const TeamMembersCard = ({ teamMembersData, isLoading }) => {
+const TeamMembersCard = ({ teamMembersData, isLoading }: { teamMembersData: any[]; isLoading: boolean }) => {
     const roles = useRef(['Team Manager', 'Lead Programmer', 'API Tester', 'Documentation Specialist', 'API Programmer']);
     //create a card to show team members with sprout icon
     return (

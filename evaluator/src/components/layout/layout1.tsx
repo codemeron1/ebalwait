@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import { Home, ClipboardCheck, Award, LogOut, ShieldUser } from 'lucide-react';
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { ModeToggle } from '../mode-toggle';
 
 import { useAuthenticatedUser } from '../../context/AuthenticatedUserContext';
 
 const Layout1 = () => {
     const [activeMenu, setActiveMenu] = useState('home');
-    const [userData, setUserData] = useState<any>(null);
     const [pageTitle, setPageTitle] = useState('Home');
     const [pageSubTitle, setPageSubTitle] = useState('Welcome to the dashboard');
     const roles = useRef(['Team Manager', 'Lead Programmer', 'API Tester', 'Documentation Specialist', 'API Programmer']);
@@ -159,7 +158,7 @@ const Layout1 = () => {
                                                     <span className="flex items-center gap-1">
                                                         <ShieldUser size={18} />
                                                         <span className='px-2'>{`${user?.first_name || 'Juan'} ${user?.last_name || 'Dela Cruz'}`}</span> |
-                                                        <span className='px-2'>{roles.current[user?.role] || 'Team Member'}</span>
+                                                        <span className='px-2'>{roles.current[Number(user?.role) || 0] || 'Team Member'}</span>
                                                     </span>
                                                 </div>
 

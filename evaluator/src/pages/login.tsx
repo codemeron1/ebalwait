@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card"
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
@@ -20,7 +19,7 @@ import { Input } from "@/components/ui/input"
 
 const Login = () => {
   const [userCredentials, setUserCredentials] = useState({ id_number: '', password: '' });
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -37,7 +36,8 @@ const Login = () => {
         navigate('/rate', { replace: true });
       })
       .catch(() => {
-        setError('Invalid ID number or password.');
+        // setError('Invalid ID number or password.');
+        console.error('Login failed');
       }).finally(() => {
         setIsLoggingIn(false);
       });

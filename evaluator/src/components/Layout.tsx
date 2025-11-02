@@ -1,17 +1,8 @@
-import { useState } from 'react';
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { ModeToggle } from './mode-toggle';
 
 const Layout = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-//   const { currentUser, logout, isAuthenticated } = useAuth();
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   const handleLogout = () => {
-//     logout();
-//     navigate('/');
-//   };
+    const isAuthenticated = false;
 
 const handleLogout = () => {}
 
