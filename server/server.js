@@ -205,7 +205,7 @@ app.get('/home/load-data', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error("Error in /home/load-data endpoint:", error);
-    return res.status(500).json({ message: "Server error encountered." });
+    return res.status(500).json({ message: "Server error encountered.", error: error.message });
   }
 
 });
