@@ -1,8 +1,4 @@
-/**
- [] Load pending evaluation
- [] Evaluation result summary
- [] List of group members - roles
- */
+
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Sprout, Users } from 'lucide-react';
@@ -16,14 +12,34 @@ import {
     EmptyTitle,
 } from "@/components/ui/empty";
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+const mockEvaluationSummaryData = [
+    {
+        id: 1,
+        date: "Week 1 (Oct 20-26)",
+        rating: 97.65
+    },
+    {
+        id: 1,
+        date: "Week 1 (Oct 20-26)",
+        rating: 98.00
+    },
+    {
+        id: 1,
+        date: "Week 1 (Oct 20-26)",
+        rating: 65
+    },
+
+];
 const PendingEvaluationCard = ({ evaluationData }) => {
     return (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
             <div className="flex items-center gap-2 mb-4">
-                <h3 className="text-lg font-semibold">Pending Evaluation</h3>
+                <Sprout className="h-5 w-5 text-primary" />
+                <h3 className="text-sm font-medium uppercase tracking-wider">Pending Evaluation</h3>
             </div>
             {!evaluationData || evaluationData.length === 0 ? (
                 <Empty>
@@ -67,7 +83,8 @@ const EvaluationSummaryCard = ({ evaluationSummaryData }) => {
     return (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
             <div className="flex items-center gap-2 mb-4">
-                <h3 className="text-lg font-semibold">Evaluation Results</h3>
+                <Sprout className="h-5 w-5 text-primary" />
+                <h3 className="text-sm font-medium uppercase tracking-wider">Evaluation Summary</h3>
             </div>
             {!evaluationSummaryData ? (
                 <Empty>
@@ -84,50 +101,52 @@ const EvaluationSummaryCard = ({ evaluationSummaryData }) => {
             ) : (
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 border rounded-md bg-muted/50">
-                            <p className="text-xs text-muted-foreground">Total Evaluations</p>
-                            <p className="text-2xl font-bold mt-1">{evaluationSummaryData.total || 0}</p>
-                        </div>
-                        <div className="p-4 border rounded-md bg-muted/50">
-                            <p className="text-xs text-muted-foreground">Completed</p>
-                            <p className="text-2xl font-bold mt-1">{evaluationSummaryData.completed || 0}</p>
-                        </div>
-                        <div className="p-4 border rounded-md bg-muted/50">
-                            <p className="text-xs text-muted-foreground">Average Score</p>
-                            <p className="text-2xl font-bold mt-1">{evaluationSummaryData.averageScore || 'N/A'}</p>
-                        </div>
-                        <div className="p-4 border rounded-md bg-muted/50">
-                            <p className="text-xs text-muted-foreground">Pending</p>
-                            <p className="text-2xl font-bold mt-1">{evaluationSummaryData.pending || 0}</p>
-                        </div>
+                        {
+                            evaluationSummaryData?.map(result => {
+                                return (
+                                    <div className="p-4 border rounded-md bg-muted/50">
+                                        <p className="text-xs text-muted-foreground">{result?.date}</p>
+                                        <p className="text-2xl font-bold mt-1">{
+                                            Number(result.rating).toFixed(2) || '-'
+                                        }</p>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                 </div>
             )}
         </div>
     );
 }
-
-const TeamMembersCard = ({ teamMembersData }) => {
+const TeamMembersCard = ({ teamMembersData, isLoading }) => {
     const roles = useRef(['Team Manager', 'Lead Programmer', 'API Tester', 'Documentation Specialist', 'API Programmer']);
     //create a card to show team members with sprout icon
     return (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
             <div className="flex items-center gap-2 mb-4">
                 <Sprout className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-semibold">Team Members</h3>
+                <h3 className="text-sm font-medium uppercase tracking-wider">Team Members</h3>
             </div>
-            {!teamMembersData || teamMembersData.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No team members found</p>
-            ) : (
-                <div className="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {teamMembersData.map((member, index) => (
-                        <div key={index} className="flex flex-col items-center justify-between py-2 border">
-                            <span className="text-sm font-medium">{`${member.first_name} ${member.last_name}`}</span>
-                            <span className="text-xs text-muted-foreground">{roles.current[Number(member.role) - 1]}</span>
+            {
+                isLoading ?
+                    <div className='flex flex-row'>
+                        <Spinner />
+                    </div>
+                    :
+                    !teamMembersData || teamMembersData.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No team members found</p>
+                    ) : (
+                        <div className="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {teamMembersData.map((member, index) => (
+                                <div key={index} className="flex flex-col items-center justify-between py-2 border">
+                                    <span className="text-sm font-medium">{`${member.first_name} ${member.last_name}`}</span>
+                                    <span className="text-xs text-muted-foreground">{roles.current[Number(member.role) - 1]}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            )}
+                    )
+            }
         </div>
     );
 }
@@ -136,9 +155,11 @@ const Home = () => {
     const [teamMembers, setTeamMembers] = useState(null);
     const [pendingEvaluations, setPendingEvaluations] = useState(null);
     const [evaluationSummary, setEvaluationSummary] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const loadInitialData = () => {
         const token = localStorage.getItem('authToken');
+        setIsLoading(true);
         axios.get(`${apiUrl}/home/load-data`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -152,6 +173,8 @@ const Home = () => {
             })
             .catch((error) => {
                 console.error(error);
+            }).finally(() => {
+                setIsLoading(false);
             })
     }
 
@@ -162,9 +185,9 @@ const Home = () => {
         <div className='pb-20'>
             <div className="grid gap-6 md:grid-cols-2 mb-4">
                 <PendingEvaluationCard evaluationData={pendingEvaluations} />
-                <EvaluationSummaryCard evaluationSummaryData={evaluationSummary} />
+                <EvaluationSummaryCard evaluationSummaryData={evaluationSummary || mockEvaluationSummaryData} />
             </div>
-            <TeamMembersCard teamMembersData={teamMembers} />
+            <TeamMembersCard teamMembersData={teamMembers} isLoading={isLoading} />
         </div>
     )
 }

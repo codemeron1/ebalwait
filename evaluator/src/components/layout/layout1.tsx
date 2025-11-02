@@ -16,6 +16,13 @@ const Layout1 = () => {
     const user = useAuthenticatedUser();
 
     useEffect(() => {
+        // const isAuthenticated = localStorage.getItem('authToken');
+        // if (!isAuthenticated) {
+        //     localStorage.removeItem('authToken');
+        //     localStorage.removeItem('userData');
+        //     navigate('/', { replace: true });
+        //     return;
+        // }
         switch (activeMenu) {
             case 'home':
                 navigate('/home');
@@ -29,16 +36,18 @@ const Layout1 = () => {
                 break;
             case 'grade':
                 setPageTitle('My Grades');
-                setPageSubTitle('View your evaluation results');
+                setPageSubTitle("Here's your evaluation results. Keep growing!");
                 navigate('/results');
                 break;
             case 'logout':
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userData');
-                navigate('/', { replace: true });
-                break;
-            default:
-                navigate('/home');
+                const really = confirm("Are you sure you want to logout?");
+                if (really) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                    navigate('/', { replace: true });
+                } else {
+                    setActiveMenu('home');
+                }
                 break;
         }
     }, [activeMenu]);
@@ -66,16 +75,12 @@ const Layout1 = () => {
                             <div className="prose prose-slate max-w-none h-full">
                                 <div className="relative h-full flex flex-col">
                                     {/* Linux Window Container */}
-                                    <div className="flex-1 bg-slate-50 rounded-none md:rounded-lg shadow-2xl 
+                                    <div className="flex-1 bg-slate-50 rounded-none md:rounded-lg md:shadow-2xl 
                                         border border-slate-300 overflow-hidden flex flex-col">
                                         {/* Window Title Bar */}
-                                        <div className="
-                                                    bg-linear-to-r from-slate-700 to-slate-800 
-                                                    px-4 py-2 flex items-center justify-between 
-                                                    border-b border-slate-600 text-slate-200
-                                                    dark:from-slate-900 dark:to-slate-950
-                                                    dark:border-slate-800
-                                                    dark:text-slate-300">
+                                        <div className="bg-linear-to-r from-slate-700 to-slate-800 px-4 py-2 flex items-center justify-between 
+                                            border-b border-slate-600 text-slate-200 dark:from-slate-900 dark:to-slate-950
+                                            dark:border-slate-800 dark:text-slate-300">
 
                                             {/* Window Controls */}
                                             <div className="flex items-center gap-2">
@@ -99,24 +104,13 @@ const Layout1 = () => {
                                         </div>
 
                                         {/* Window Content */}
-                                        <div className="relative flex-1 flex flex-col bg-white">
+                                        <div className="relative flex-1 flex flex-col bg-background">
                                             {/* Application Header */}
-                                            <header className="
-  bg-slate-100 
-  border-b border-slate-200 
-  px-6 py-4
-
-  dark:bg-slate-900 
-  dark:border-slate-800
-">
+                                            <header className="bg-slate-100 border-b border-slate-200 px-6 py-4 
+                                                dark:bg-slate-900  dark:border-slate-800">
                                                 <div className="flex items-center gap-3">
-
-                                                    <div className="
-      w-8 h-8 rounded-lg flex items-center justify-center shadow-sm
-      bg-gradient-to-br from-blue-500 to-blue-600
-
-      dark:from-blue-600 dark:to-blue-700
-    ">
+                                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm 
+                                                        bg-linear-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700">
                                                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                                         </svg>
@@ -136,7 +130,7 @@ const Layout1 = () => {
 
                                             {/* Main Content Area */}
                                             <main className="flex-1 overflow-auto bg-background">
-                                                <div className="p-6">
+                                                <div className="p-1 md:p-6">
                                                     {/* Terminal-style Container */}
                                                     <div className="overflow-hidden">
                                                         {/* Terminal Content */}
@@ -153,31 +147,26 @@ const Layout1 = () => {
                                             </main>
 
                                             {/* Status Bar */}
-<div className="
-    fixed bottom-0 left-0 right-0 bg-slate-200 border-t border-slate-300 
-    px-4 py-2 flex items-center justify-between text-xs text-slate-600
+                                            <div className=" fixed bottom-0 left-0 right-0 bg-slate-200 border-t border-slate-300 
+                                                px-4 py-2 flex items-center justify-between text-xs text-slate-600
+                                                dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400">
+                                                <div className="flex items-center gap-4">
+                                                    <span className="hidden md:flex items-center gap-1">
+                                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                        Logged in
+                                                    </span>
 
-    dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400
-">
-    <div className="flex items-center gap-4">
-        <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            Logged in
-        </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <ShieldUser size={18} />
+                                                        <span className='px-2'>{`${user?.first_name || 'Juan'} ${user?.last_name || 'Dela Cruz'}`}</span> |
+                                                        <span className='px-2'>{roles.current[user?.role] || 'Team Member'}</span>
+                                                    </span>
+                                                </div>
 
-        <span className="flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span className='px-2'>{`${user?.first_name} ${user?.last_name}` || '-'}</span> |
-            <span className='px-2'>{roles.current[user?.role] || '-'}</span>
-        </span>
-    </div>
-
-    <div className="flex items-center gap-4">
-        <span>{new Date().toLocaleTimeString()}</span>
-    </div>
-</div>
+                                                <div className="flex items-center pr-2">
+                                                    <span>{new Date().toLocaleTimeString()}</span>
+                                                </div>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -190,7 +179,7 @@ const Layout1 = () => {
 
             {/* Dock Navigation - Desktop (Right Side) */}
             <div className="hidden md:block fixed right-8 top-1/2 -translate-y-1/2 z-20">
-                <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/50">
+                <div className="bg-backgroun/90 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/50">
                     <nav className="flex flex-col gap-3">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
@@ -227,7 +216,7 @@ const Layout1 = () => {
 
             {/* Dock Navigation - Mobile (Bottom) */}
             <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30">
-                <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-3 border border-white/50">
+                <div className="bg-background/95 backdrop-blur-lg rounded-2xl shadow-2xl p-3 border border-white/50">
                     <nav className="flex flex-row gap-2">
                         {menuItems.map((item) => {
                             const Icon = item.icon;

@@ -28,7 +28,6 @@ const handleLogout = () => {}
                 <Link to="/rate" className="text-gray-700 hover:text-blue-700">Evaluate</Link>
                 <Link to="/results" className="text-gray-700 hover:text-blue-700">My Evaluation Result</Link>
                 <Link to="/" className="text-gray-700 hover:text-blue-700">Logout</Link>
-
                 <ModeToggle />
               </div>
             </div>

@@ -101,7 +101,7 @@ const Rating = () => {
       }).finally(() => {
         setIsLoadingMembers(false);
       });
-    
+
   }
 
   const handleEvaluate = ({ questionnaire, ratee, classDateId, evaluatorId }: HandleEvaluateProps) => {
@@ -123,7 +123,7 @@ const Rating = () => {
   }, [classDates]);
 
   useEffect(() => {
-    let selectedDate =  selectedClassDateId ? selectedClassDateId : '';
+    let selectedDate = selectedClassDateId ? selectedClassDateId : '';
     localStorage.setItem('selectedClassDate', selectedDate);
     handleSelectedDateChange(selectedDate);
   }, [selectedClassDateId]);
@@ -134,12 +134,15 @@ const Rating = () => {
 
   return (
     <>
-      <div className="max-w-sm mx-auto py-4">
-        <label htmlFor="cboDates" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Select class date</label>
+      <div className='mb-4'>
+        <label htmlFor="cboDates"
+          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Select class date
+        </label>
         <select id="cboDates"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-pointer"
+          className="w-full bg-background border border-gray-300 text-gray-900 text-sm 
+              rounded-lg dark:text-primary
+            focus:ring-blue-500 focus:border-blue-500 p-2.5 cursor-pointer"
           onChange={(e) => setSelectedClassDateId(e.target.value)}
           value={String(selectedClassDateId)}>
           <option value='' disabled selected>Select Class Date</option>
@@ -169,7 +172,7 @@ const Rating = () => {
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className='overflow-x-auto'>
                 {members.map((member: MemberData) => (
                   <TableRow key={`mtbe${member?.id}`}>
                     <TableCell className="font-medium">{member?.last_name}</TableCell>

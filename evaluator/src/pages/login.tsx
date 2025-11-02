@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { cn } from "@/components/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -26,7 +25,6 @@ const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
-
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -47,7 +45,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <Card>
           <CardHeader>
