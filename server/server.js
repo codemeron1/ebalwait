@@ -7,7 +7,7 @@ import cors from 'cors';
 
 import { firebaseDB } from './firebase.js';
 import { parseCsv } from './utils/utils.js';
-import { getClassDates, getRatees } from "./utils/firebase.ts";
+import { getClassDates, getRatees } from "./utils/firebase.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
