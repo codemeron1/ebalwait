@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Sprout } from 'lucide-react';
 
 // --- Mock Data ---
@@ -44,10 +43,10 @@ const mockResults = [
 
 interface Rating {
   criterion: string,
-  score: number
+  score: number | string
 }
 interface FeedbackCardProps {
-  id: string,
+  id: string | number,
   week: string,
   ratings: Rating[],
   remarks: string
@@ -127,11 +126,6 @@ const FeedbackCard = ({ result } : {result: FeedbackCardProps}) => {
 
 
 const Result = () => {
-  // State to manage the selected week
-  const [selectedWeek, setSelectedWeek] = useState("Week 1 (Oct 20-26)");
-
-  // Filter results based on the selected week
-  const filteredResults = mockResults.filter(r => r.week === selectedWeek);
 
   return (
     <div className="min-h-screen bg-background md:p-6 pb-20">
@@ -139,8 +133,8 @@ const Result = () => {
 
         {/* Results content */}
         <div className="space-y-6">
-          {filteredResults.length > 0 ? (
-            filteredResults.map((result) => (
+          {mockResults.length > 0 ? (
+            mockResults.map((result) => (
               <FeedbackCard key={result.id} result={result} />
             ))
           ) : (

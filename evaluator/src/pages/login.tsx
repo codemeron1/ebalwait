@@ -22,7 +22,6 @@ const Login = () => {
   const [userCredentials, setUserCredentials] = useState({ id_number: '', password: '' });
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ const Login = () => {
         localStorage.setItem('userData', JSON.stringify(response.data.user));
         navigate('/rate', { replace: true });
       })
-      .catch(err => {
+      .catch(() => {
         setError('Invalid ID number or password.');
       }).finally(() => {
         setIsLoggingIn(false);

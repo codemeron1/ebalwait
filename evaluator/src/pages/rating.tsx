@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -20,7 +19,6 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 
-import type { UserData } from '@/types/types';
 import { useAuthenticatedUser } from '@/context/AuthenticatedUserContext';
 
 interface MemberData {
