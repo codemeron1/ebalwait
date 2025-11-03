@@ -4,7 +4,7 @@ import csvParser from 'csv-parser';
 
 const parseCsv = () => {
   // const file = "./datasets/sample.csv";
-  const file = "./datasets/import-student-template-4A.csv";
+  const file = "./datasets/import-student-template-4C.csv";
 
   return new Promise((resolve, reject) => {
     const data = [];

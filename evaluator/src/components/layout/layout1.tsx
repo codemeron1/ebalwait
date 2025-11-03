@@ -4,15 +4,23 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { ModeToggle } from '../mode-toggle';
 
 import { useAuthenticatedUser } from '../../context/AuthenticatedUserContext';
+import type { UserData } from '../../types/types';
 
 const Layout1 = () => {
     const [activeMenu, setActiveMenu] = useState('home');
     const [pageTitle, setPageTitle] = useState('Home');
+    const [user, setUser] = useState<UserData | null>(null);
     const [pageSubTitle, setPageSubTitle] = useState('Welcome to the dashboard');
     const roles = useRef(['Team Manager', 'Lead Programmer', 'API Tester', 'Documentation Specialist', 'API Programmer']);
 
     const navigate = useNavigate();
-    const user = useAuthenticatedUser();
+
+
+    const authUser = useAuthenticatedUser();
+
+    useEffect(() => {
+        setUser(authUser);
+    }, [authUser]);
 
     useEffect(() => {
         // const isAuthenticated = localStorage.getItem('authToken');
