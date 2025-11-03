@@ -15,21 +15,19 @@ const Layout1 = () => {
 
     const navigate = useNavigate();
 
-
     const authUser = useAuthenticatedUser();
-
     useEffect(() => {
         setUser(authUser);
     }, [authUser]);
 
     useEffect(() => {
-        // const isAuthenticated = localStorage.getItem('authToken');
-        // if (!isAuthenticated) {
-        //     localStorage.removeItem('authToken');
-        //     localStorage.removeItem('userData');
-        //     navigate('/', { replace: true });
-        //     return;
-        // }
+        const isAuthenticated = localStorage.getItem('authToken');
+        if (!isAuthenticated) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            navigate('/', { replace: true });
+            return;
+        }
         switch (activeMenu) {
             case 'home':
                 navigate('/home');
@@ -57,6 +55,8 @@ const Layout1 = () => {
                 }
                 break;
         }
+
+        
     }, [activeMenu]);
 
     const menuItems = [
