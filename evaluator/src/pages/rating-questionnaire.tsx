@@ -50,7 +50,7 @@ const RatingQuestionnaire = () => {
                                 <p className="font-semibold text-blue-600 bg-blue-100 
                                     dark:bg-background px-2 py-0.5 rounded-full text-xs inline-block 
                                     mt-0.5">
-                                    {`${roles.current[memberData.role]}`}</p>
+                                    {`${roles.current[memberData.role - 1]}`}</p>
                             </div>
                         </div>
                     </div>
