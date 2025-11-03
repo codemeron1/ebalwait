@@ -19,9 +19,34 @@ function App() {
   const [authenticatedUserData, setAuthenticatedUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
-    const userDataString: (string | null) = localStorage.getItem('userData');
-    setAuthenticatedUserData(userDataString ?  JSON.parse(userDataString) : null);
-  }, []); 
+    const updateUserData = () => {
+      const userDataString: (string | null) = localStorage.getItem('userData');
+      setAuthenticatedUserData(userDataString ? JSON.parse(userDataString) : null);
+    };
+
+    // Initial load
+    updateUserData();
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'userData') {
+        updateUserData();
+      }
+    };
+
+    // Listen for custom events (for same-tab updates)
+    const handleUserDataChange = () => {
+      updateUserData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userDataChanged', handleUserDataChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userDataChanged', handleUserDataChange);
+    };
+
+  }, []);
 
   return (
     <Router>

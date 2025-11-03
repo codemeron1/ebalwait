@@ -33,6 +33,9 @@ const Login = () => {
         const { token } = response.data;
         localStorage.setItem('authToken', token);
         localStorage.setItem('userData', JSON.stringify(response.data.user));
+        
+        window.dispatchEvent(new CustomEvent('userDataChanged'));
+        
         navigate('/rate', { replace: true });
       })
       .catch(() => {

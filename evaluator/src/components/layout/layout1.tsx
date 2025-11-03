@@ -49,6 +49,9 @@ const Layout1 = () => {
                 if (really) {
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('userData');
+
+                    window.dispatchEvent(new CustomEvent('userDataChanged'));
+                    
                     navigate('/', { replace: true });
                 } else {
                     setActiveMenu('home');
