@@ -128,7 +128,7 @@ const FeedbackCard = ({ result } : {result: FeedbackCardProps}) => {
 const Result = () => {
 
   return (
-    <div className="min-h-screen bg-background md:p-6 pb-20">
+    <div className="min-h-screen bg-background p-2 md:p-6 pb-20">
       <div className="max-w-3xl mx-auto">
 
         {/* Results content */}

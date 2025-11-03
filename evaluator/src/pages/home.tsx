@@ -182,7 +182,7 @@ const Home = () => {
         loadInitialData();
     }, []);
     return (
-        <div className='pb-20'>
+        <div className='p-2 pb-20'>
             <div className="grid gap-6 md:grid-cols-2 mb-4">
                 <PendingEvaluationCard evaluationData={pendingEvaluations} />
                 <EvaluationSummaryCard evaluationSummaryData={evaluationSummary || mockEvaluationSummaryData} />

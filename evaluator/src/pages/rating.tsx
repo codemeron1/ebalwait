@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import { Spinner } from "@/components/ui/spinner";
+import { InfoIcon } from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -10,14 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from '@/components/ui/button';
-import { Spinner } from "@/components/ui/spinner";
-import { InfoIcon } from "lucide-react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
 
 import { useAuthenticatedUser } from '@/context/AuthenticatedUserContext';
 
@@ -131,19 +131,19 @@ const Rating = () => {
   }, []);
 
   return (
-    <>
-      <div className='mb-4'>
+    <div className='w-screen max-w-[100vw] overflow-x-auto p-2 pb-20'>
+      <div className='mb-4 w-full max-w-full'>
         <label htmlFor="cboDates"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Select class date
         </label>
         <select id="cboDates"
-          className="w-full bg-background border border-gray-300 text-gray-900 text-sm 
-              rounded-lg dark:text-primary
-            focus:ring-blue-500 focus:border-blue-500 p-2.5 cursor-pointer"
+          className="w-full max-w-full bg-background border border-gray-300 text-gray-900 text-sm 
+              rounded-lg dark:text-primary focus:ring-blue-500 focus:border-blue-500 p-2.5 
+              cursor-pointer overflow-hidden text-ellipsis"
           onChange={(e) => setSelectedClassDateId(e.target.value)}
           value={String(selectedClassDateId)}>
-          <option value='' disabled selected>Select Class Date</option>
+          <option value='' disabled>Select Class Date</option>
           {
             classDates.map((data, index) => (
               <option key={`cboDate${index}`} value={data?.documentId}>{data?.date}</option>
@@ -159,48 +159,50 @@ const Rating = () => {
           </div>
           :
           selectedClassDateId ?
-            <Table>
-              <TableCaption>Team members that you can evaluate.</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Last Name</TableHead>
-                  <TableHead>First Name</TableHead>
-                  <TableHead>Middle Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className='overflow-x-auto'>
-                {members.map((member: MemberData) => (
-                  <TableRow key={`mtbe${member?.id}`}>
-                    <TableCell className="font-medium">{member?.last_name}</TableCell>
-                    <TableCell>{member?.first_name}</TableCell>
-                    <TableCell>{member?.middle_name}</TableCell>
-                    <TableCell>{roles.current[member?.role]}</TableCell>
-                    <TableCell>
-                      {
-                        !(member?.evaluationStatus) ?
-                          <Button
-                            variant="outline"
-                            className='select-none text-blue-600'
-                            onClick={() => handleEvaluate({
-                              questionnaire: questionnaires[member?.role],
-                              ratee: member,
-                              classDateId: selectedClassDateId,
-                              evaluatorId: authenticatedUser?.id
-                            })}> Evaluate </Button>
-                          :
-                          <Button
-                            variant="outline"
-                            className='select-none text-gray-600'
-                            disabled={true}
-                          > Done </Button>
-                      }
-                    </TableCell>
+            <div className="overflow-x-scroll w-full border rounded-md bg-background">
+              <Table>
+                <TableCaption>Team members that you can evaluate.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead></TableHead>
+                    <TableHead className="w-[100px]">Last Name</TableHead>
+                    <TableHead>First Name</TableHead>
+                    <TableHead>Middle Name</TableHead>
+                    <TableHead>Role</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody className='overflow-x-auto'>
+                  {members.map((member: MemberData) => (
+                    <TableRow key={`mtbe${member?.id}`}>
+                      <TableCell>
+                        {
+                          !(member?.evaluationStatus) ?
+                            <Button
+                              variant="outline"
+                              className='select-none text-blue-600'
+                              onClick={() => handleEvaluate({
+                                questionnaire: questionnaires[member?.role],
+                                ratee: member,
+                                classDateId: selectedClassDateId,
+                                evaluatorId: authenticatedUser?.id
+                              })}> Evaluate </Button>
+                            :
+                            <Button
+                              variant="outline"
+                              className='select-none text-gray-600'
+                              disabled={true}
+                            > Done </Button>
+                        }
+                      </TableCell>
+                      <TableCell className="font-medium">{member?.last_name}</TableCell>
+                      <TableCell>{member?.first_name}</TableCell>
+                      <TableCell>{member?.middle_name}</TableCell>
+                      <TableCell>{roles.current[member?.role]}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
             :
             <Alert>
               <InfoIcon />
@@ -212,7 +214,7 @@ const Rating = () => {
       }
 
 
-    </>
+    </div>
   )
 }
 

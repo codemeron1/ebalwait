@@ -1,4 +1,4 @@
-import  { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Home, ClipboardCheck, Award, LogOut, ShieldUser } from 'lucide-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { ModeToggle } from '../mode-toggle';
@@ -128,22 +128,16 @@ const Layout1 = () => {
                                             </header>
 
                                             {/* Main Content Area */}
-                                            <main className="flex-1 overflow-auto bg-background">
-                                                <div className="p-1 md:p-6">
-                                                    {/* Terminal-style Container */}
-                                                    <div className="overflow-hidden">
-                                                        {/* Terminal Content */}
-                                                        <div className="bg-background p-6 overflow-y-auto max-h-[70vh] 
-                                                            [&::-webkit-scrollbar]:w-2 
-                                                            [&::-webkit-scrollbar-track]:bg-muted 
-                                                            [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 
-                                                            [&::-webkit-scrollbar-thumb]:rounded-full 
-                                                            hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/40">
-                                                            <Outlet />
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <main className="relative bg-background overflow-y-auto max-h-[70vh]
+                                                         
+                                                        [&::-webkit-scrollbar]:w-2 
+                                                        [&::-webkit-scrollbar-track]:bg-muted 
+                                                        [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 
+                                                        [&::-webkit-scrollbar-thumb]:rounded-full 
+                                                        hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/40">
+                                                <Outlet />
                                             </main>
+
 
                                             {/* Status Bar */}
                                             <div className=" fixed bottom-0 left-0 right-0 bg-slate-200 border-t border-slate-300 
@@ -214,8 +208,8 @@ const Layout1 = () => {
             </div>
 
             {/* Dock Navigation - Mobile (Bottom) */}
-            <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30">
-                <div className="bg-background/95 backdrop-blur-lg rounded-2xl shadow-2xl p-3 border border-white/50">
+            <div className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-30">
+                <div className="bg-background/95 backdrop-blur-lg rounded-2xl shadow-2xl p-1 border border-white/50">
                     <nav className="flex flex-row gap-2">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
