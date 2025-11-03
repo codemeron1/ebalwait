@@ -9,16 +9,7 @@ const mockResults = [
     ratings: [
       { criterion: "Communication", score: 4 },
       { criterion: "Teamwork & Collaboration", score: 5 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
-      { criterion: "Quality of Work", score: 4 },
+      { criterion: "Quality of Work", score: 4 }
     ],
     remarks: "Really stepped up this week. Communication was clear and the collaboration on the main feature was excellent. Keep it up!"
   },
@@ -57,6 +48,8 @@ interface FeedbackCardProps {
  */
 const FeedbackCard = ({ result } : {result: FeedbackCardProps}) => {
   const computeAverage = (ratings: Rating[]): Number => {
+
+    if (!Array.isArray(ratings) || ratings?.length == 0) return 65.00
 
     const length = ratings?.length;
     let average = 0;
@@ -132,7 +125,7 @@ const Result = () => {
       <div className="max-w-3xl mx-auto">
 
         {/* Results content */}
-        <div className="space-y-6">
+        <div className="space-y-6 p-2">
           {mockResults.length > 0 ? (
             mockResults.map((result) => (
               <FeedbackCard key={result.id} result={result} />

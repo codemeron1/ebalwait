@@ -131,7 +131,7 @@ const Rating = () => {
   }, []);
 
   return (
-    <div className='w-screen max-w-[100vw] overflow-x-auto p-2 pb-20'>
+    <div className='w-screen max-w-[100vw] md:w-full p-2 pb-20 md:p-6 '>
       <div className='mb-4 w-full max-w-full'>
         <label htmlFor="cboDates"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -159,7 +159,7 @@ const Rating = () => {
           </div>
           :
           selectedClassDateId ?
-            <div className="overflow-x-scroll w-full border rounded-md bg-background">
+            <div className="overflow-x-auto w-full border rounded-md bg-background p-2">
               <Table>
                 <TableCaption>Team members that you can evaluate.</TableCaption>
                 <TableHeader>

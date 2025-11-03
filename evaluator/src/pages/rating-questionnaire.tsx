@@ -33,10 +33,10 @@ const RatingQuestionnaire = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="p-2 pb-20">
             {
                 memberData ?
-                    <div className="flex flex-col py-4 mb-4 bg-linear-to-r from-blue-50 to-indigo-50 
+                    <div className="flex flex-col py-4 mb-4 bg-background from-blue-50 to-indigo-50 
                         rounded-lg p-4 border border-blue-100 shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-600 
@@ -46,8 +46,11 @@ const RatingQuestionnaire = () => {
                                 </svg>
                             </div>
                             <div>
-                                <p className="font-bold text-xl text-slate-800">{`${memberData.first_name} ${memberData.last_name}`}</p>
-                                <p className="font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full text-xs inline-block mt-0.5">{`${roles.current[memberData.role]}`}</p>
+                                <p className="font-bold text-xl text-slate-800 dark:text-primary">{`${memberData.first_name} ${memberData.last_name}`}</p>
+                                <p className="font-semibold text-blue-600 bg-blue-100 
+                                    dark:bg-background px-2 py-0.5 rounded-full text-xs inline-block 
+                                    mt-0.5">
+                                    {`${roles.current[memberData.role]}`}</p>
                             </div>
                         </div>
                     </div>
@@ -57,17 +60,18 @@ const RatingQuestionnaire = () => {
                 {
                     data?.map((item: any, index: number) => {
                         return (
-                            <div className="bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200" key={item.documentId}>
+                            <div className="bg-background rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200" key={item.documentId}>
                                 <div className="p-4">
                                     <div className="flex items-start gap-3 mb-4">
-                                        <div className="shrink-0 w-7 h-7 bg-linear-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                                        <div className="shrink-0 w-7 h-7 bg-linear-to-br from-slate-600 to-slate-700 rounded-full flex items-center 
+                                            justify-center text-primary font-bold text-xs shadow-sm">
                                             {index + 1}
                                         </div>
-                                        <p className="font-semibold text-base text-slate-800 leading-snug">
+                                        <p className="font-semibold text-base text-slate-800 dark:text-primary leading-snug">
                                             {item.text}
                                         </p>
                                     </div>
-                                    <div className="flex flex-row flex-wrap gap-2 pl-10">
+                                    <div className="flex flex-col md:flex-row flex-wrap gap-2 pl-10">
                                         <div className="flex flex-row items-center space-x-2 bg-green-50 hover:bg-green-100 rounded-md px-3 py-2 transition-colors duration-150 border border-green-200">
                                             <input type='radio' value='5'
                                                 id={`rb5${item?.documentId}`}
