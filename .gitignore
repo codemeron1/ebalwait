@@ -10,3 +10,6 @@ evaluator/.env
 
 .vscode
 roadmap.g
+server/fbKey_1.json
+server/encoded.txt
+server/stdout
