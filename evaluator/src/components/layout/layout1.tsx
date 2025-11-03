@@ -152,7 +152,7 @@ const Layout1 = () => {
                                                     <span className="flex items-center gap-1">
                                                         <ShieldUser size={18} />
                                                         <span className='px-2'>{`${user?.first_name || 'Juan'} ${user?.last_name || 'Dela Cruz'}`}</span> |
-                                                        <span className='px-2'>{roles.current[Number(user?.role) || 0] || 'Team Member'}</span>
+                                                        <span className='px-2'>{roles.current[Number(user?.role) - 1 || 0] || 'Team Member'}</span>
                                                     </span>
                                                 </div>
 

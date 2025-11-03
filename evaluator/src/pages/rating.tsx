@@ -197,7 +197,7 @@ const Rating = () => {
                       <TableCell className="font-medium">{member?.last_name}</TableCell>
                       <TableCell>{member?.first_name}</TableCell>
                       <TableCell>{member?.middle_name}</TableCell>
-                      <TableCell>{roles.current[member?.role]}</TableCell>
+                      <TableCell>{roles.current[member?.role - 1]}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
