@@ -13,3 +13,5 @@ roadmap.g
 server/fbKey_1.json
 server/encoded.txt
 server/stdout
+server/datasets/import-student-template-4A.csv
+server/datasets/import-student-template-4C.csv
