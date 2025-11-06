@@ -408,8 +408,11 @@ app.get("/result/load", authenticateToken, async (req, res) => {
       }
 
       // get remarks if any
-      if (item.remarks && item.remarks != '') {
-        evaluationRemarks[classDateId] = evaluationRemarks[classDateId] || [];
+      if (item.remarks && item.remarks != "") {
+        if (!evaluationRemarks[classDateId]) {
+          evaluationRemarks[classDateId] = [];
+        }
+        evaluationRemarks[classDateId].push(item.remarks);
       }
 
       tempData[classDateId].push(item);
@@ -435,8 +438,9 @@ app.get("/result/load", authenticateToken, async (req, res) => {
         for (const [criteriaId, score] of Object.entries(evaluation)) {
           if (typeof score === "number") {
             if (!totals[criteriaId]) {
-              totals[criteriaId] = (totals[criteriaId] || 0) + score;
+              totals[criteriaId] = 0;
             }
+            totals[criteriaId] += score;
           }
         }
       });
@@ -453,6 +457,7 @@ app.get("/result/load", authenticateToken, async (req, res) => {
         const criteriaQuestion = evaluationQuestions.find(
           (q) => q.docId === criteriaId
         );
+        console.log('evaluatorCount: ', evaluatorCount, ' totalScore: ', totalScore);
         averagesPerCriteria[criteriaQuestion.text] = (
           totalScore / evaluatorCount
         ).toFixed(2);
@@ -497,7 +502,7 @@ app.get("/result/load", authenticateToken, async (req, res) => {
     return res.status(500).json({
       message: "Server error encountered.",
       error: error.message,
-      userData: req.user
+      userData: req.user,
     });
   }
 });
