@@ -1,13 +1,14 @@
-import express from 'express';
-import bcrypt from 'bcrypt';
-import dotenv from 'dotenv'; dotenv.config();
-import { readFile } from 'fs/promises';
-import jwt from 'jsonwebtoken';
-import cors from 'cors';
+import express from "express";
+import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+dotenv.config();
+import { readFile } from "fs/promises";
+import jwt from "jsonwebtoken";
+import cors from "cors";
 
-import { firebaseDB } from './firebase.js';
-import { parseCsv } from './utils/utils.js';
-import { getClassDates, getRatees } from "./utils/firebase.js";
+import { firebaseDB } from "./firebase.js";
+import { parseCsv } from "./utils/utils.js";
+import { getClassDates, getQuestions, getRatees } from "./utils/firebase.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,23 +26,23 @@ app.use(cors()); //TODO change this later....
 
 // Middleware to authenticate JWT tokens
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
   if (!token) {
-    return res.status(401).json({ message: 'Access token required' });
+    return res.status(401).json({ message: "Access token required" });
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid or expired token' });
+      return res.status(403).json({ message: "Invalid or expired token" });
     }
     req.user = user; // Attach user data to request object
     next();
   });
 };
 
-app.post('/user/register', async (req, res) => {
+app.post("/user/register", async (req, res) => {
   const accounts = await parseCsv();
 
   const targetCollection = firebaseDB.collection("users");
@@ -53,18 +54,18 @@ app.post('/user/register', async (req, res) => {
   res.send("User inserted!!!!");
 });
 
-app.get('/user/login', async (req, res) => {
+app.get("/user/login", async (req, res) => {
   const { id_number, password } = req.query;
 
-  console.log('id_number: ', id_number)
+  console.log("id_number: ", id_number);
   const targetCollection = firebaseDB.collection("users");
   const validationResult = await targetCollection
-    .where('id_number', '==', String(id_number))
+    .where("id_number", "==", String(id_number))
     .limit(1)
     .get();
 
   if (validationResult.empty) {
-    return res.status(404).json({ message: 'User not found.' });
+    return res.status(404).json({ message: "User not found." });
   }
 
   const userDoc = validationResult.docs[0];
@@ -73,7 +74,7 @@ app.get('/user/login', async (req, res) => {
   //compare password
   const validatePassword = await bcrypt.compare(password, user?.password);
   if (!validatePassword) {
-    return res.status(401).json({ message: "Invalid password." })
+    return res.status(401).json({ message: "Invalid password." });
   }
 
   // Create JWT token
@@ -89,7 +90,7 @@ app.get('/user/login', async (req, res) => {
     group: user?.group,
   };
 
-  const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '24h' });
+  const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "24h" });
 
   return res.status(200).json({
     message: "Login successful",
@@ -101,45 +102,49 @@ app.get('/user/login', async (req, res) => {
       middle_name: user?.middle_name,
       id_number: user?.id_number,
       role: user?.role,
-    }
+    },
   });
 });
 
-app.post('/user/group-role-update', authenticateToken, async (req, res) => {
+app.post("/user/group-role-update", authenticateToken, async (req, res) => {
   const { group, role } = req.body;
   const userId = req.user.id_number;
 
   // Validate input
   if (!userId || !group || !role) {
-    return res.status(400).json({ message: 'Missing required fields.' });
+    return res.status(400).json({ message: "Missing required fields." });
   }
 
   try {
     // check user data if exists
-    const userQuery = await firebaseDB.collection('users').where("id_number", "==", String(userId)).limit(1).get();
+    const userQuery = await firebaseDB
+      .collection("users")
+      .where("id_number", "==", String(userId))
+      .limit(1)
+      .get();
     if (userQuery.empty) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res.status(404).json({ message: "User not found." });
     }
     // get doc ref and update user profile
     const userRef = userQuery.docs[0].ref;
     await userRef.update({ group, role });
 
-    return res.status(200).json({ message: 'User role updated successfully.' });
+    return res.status(200).json({ message: "User role updated successfully." });
   } catch (error) {
-    console.error('Error updating user role:', error);
-    return res.status(500).json({ message: 'Failed to update user role.' });
+    console.error("Error updating user role:", error);
+    return res.status(500).json({ message: "Failed to update user role." });
   }
 });
 
-app.post('/user/roles', async (req, res) => {
+app.post("/user/roles", async (req, res) => {
   try {
     const roles = await readFile("datasets/roles.json", { encoding: "utf-8" });
     const jsonData = JSON.parse(roles);
-    console.log(jsonData)
+    console.log(jsonData);
 
-    const targetCollection = firebaseDB.collection('roles');
+    const targetCollection = firebaseDB.collection("roles");
     for (let data of jsonData?.data) {
-      console.log(data)
+      console.log(data);
       const insert = await targetCollection.add(data);
     }
 
@@ -150,22 +155,22 @@ app.post('/user/roles', async (req, res) => {
   }
 });
 
-app.get('/home/load-data', authenticateToken, async (req, res) => {
+app.get("/home/load-data", authenticateToken, async (req, res) => {
   try {
     const teamMembers = [];
     const pendingEvaluations = [];
     let {
       section: currentUserSection,
       group: currentUserGroup,
-      id: currentUserDocumentId
+      id: currentUserDocumentId,
     } = req.user;
     //get team members
-    const teamMembersQuery = await firebaseDB.collection('users')
-      .where('group', '==', currentUserGroup)
-      .where('section', '==', currentUserSection)
-      .get()
-    
-    
+    const teamMembersQuery = await firebaseDB
+      .collection("users")
+      .where("group", "==", currentUserGroup)
+      .where("section", "==", currentUserSection)
+      .get();
+
     teamMembersQuery.forEach((doc) => {
       teamMembers.push({ ...doc.data() });
     });
@@ -181,10 +186,11 @@ app.get('/home/load-data', authenticateToken, async (req, res) => {
       let pendingRateesCount = 0;
       for (const ratee of ratees) {
         const rateeId = ratee?.id;
-        const alreadyEvaluatedQuery = await firebaseDB.collection('evaluationResult')
-          .where('classDateId', '==', classDateId)
-          .where('evaluatorId', '==', evaluatorId)
-          .where('rateeId', '==', rateeId)
+        const alreadyEvaluatedQuery = await firebaseDB
+          .collection("evaluationResult")
+          .where("classDateId", "==", classDateId)
+          .where("evaluatorId", "==", evaluatorId)
+          .where("rateeId", "==", rateeId)
           .get();
         if (alreadyEvaluatedQuery.empty) {
           pendingRateesCount++;
@@ -195,7 +201,7 @@ app.get('/home/load-data', authenticateToken, async (req, res) => {
 
       pendingEvaluations.push({
         ...date,
-        pendingRateesCount
+        pendingRateesCount,
       });
     }
 
@@ -203,24 +209,29 @@ app.get('/home/load-data', authenticateToken, async (req, res) => {
 
     return res.status(200).json({
       teamMembers,
-      pendingEvaluations
+      pendingEvaluations,
     });
   } catch (error) {
     console.error("Error in /home/load-data endpoint:", error);
-    return res.status(500).json({ message: "Server error encountered.", error: error.message, userData: req.user });
+    return res.status(500).json({
+      message: "Server error encountered.",
+      error: error.message,
+      userData: req.user,
+    });
   }
-
 });
 
-app.post('/evaluate/criteria', async (req, res) => {
+app.post("/evaluate/criteria", async (req, res) => {
   try {
-    const criteria = await readFile("datasets/criteria.json", { encoding: "utf-8" });
+    const criteria = await readFile("datasets/criteria.json", {
+      encoding: "utf-8",
+    });
     const jsonData = JSON.parse(criteria);
-    console.log(jsonData)
+    console.log(jsonData);
 
-    const targetCollection = firebaseDB.collection('questions');
+    const targetCollection = firebaseDB.collection("questions");
     for (let data of jsonData?.data) {
-      console.log(data)
+      console.log(data);
       const insert = await targetCollection.add(data);
     }
 
@@ -231,26 +242,25 @@ app.post('/evaluate/criteria', async (req, res) => {
   }
 });
 
-app.get('/evaluate/ratees-load', authenticateToken, async (req, res) => {
+app.get("/evaluate/ratees-load", authenticateToken, async (req, res) => {
   try {
     const { evaluateDate } = req.query;
     const currentUserId = req.user.id;
     const { role, group, section } = req.user;
 
-    if (!evaluateDate) throw new Error("evaluateDate is empty or missing.")
+    if (!evaluateDate) throw new Error("evaluateDate is empty or missing.");
 
     // fetch evaluations criteria
-    const criteriaQuery = await firebaseDB.collection('questions')
-      .get();
+    const criteriaQuery = await firebaseDB.collection("questions").get();
 
     const criteria = {
       1: [],
       2: [],
       3: [],
       4: [],
-      5: []
-    }
-    criteriaQuery.forEach(doc => {
+      5: [],
+    };
+    criteriaQuery.forEach((doc) => {
       const data = doc.data();
       const documentId = doc.id;
       const { text, type, scaleMin, scaleMax } = data;
@@ -263,19 +273,20 @@ app.get('/evaluate/ratees-load', authenticateToken, async (req, res) => {
     });
 
     // fetch group members
-    const groupMembersQuery = await firebaseDB.collection('users')
-      .where('group', '==', group)
-      .where('section', '==', section)
-      .where('role', '!=', role)
+    const groupMembersQuery = await firebaseDB
+      .collection("users")
+      .where("group", "==", group)
+      .where("section", "==", section)
+      .where("role", "!=", role)
       .get();
 
     const assignRateesBasedOnRole = {
       1: [2, 3, 4], // team manager evaluates lead programmer, API tester, document specialist
       2: [1, 5], // lead programmer evaluates ...
-      3: [1, 2],  // API Tester evaluates ...
+      3: [1, 2], // API Tester evaluates ...
       4: [1, 2], // document specialist evaluates ...
-      5: [2] // API Programmer evaluates ...
-    }
+      5: [2], // API Programmer evaluates ...
+    };
 
     const membersToBeEvaluated = [];
 
@@ -284,10 +295,11 @@ app.get('/evaluate/ratees-load', authenticateToken, async (req, res) => {
       const rateeDocumentId = doc.id;
       //check if member is already evaluated by the current user;
       //based on: rateeDocId, currentUserId, classDateId
-      const alreadyEvaluatedQuery = await firebaseDB.collection('evaluationResult')
-        .where('classDateId', '==', evaluateDate)
-        .where('evaluatorId', '==', currentUserId)
-        .where('rateeId', '==', rateeDocumentId)
+      const alreadyEvaluatedQuery = await firebaseDB
+        .collection("evaluationResult")
+        .where("classDateId", "==", evaluateDate)
+        .where("evaluatorId", "==", currentUserId)
+        .where("rateeId", "==", rateeDocumentId)
         .get();
 
       let alreadyEvaluatedStatus = false;
@@ -304,7 +316,7 @@ app.get('/evaluate/ratees-load', authenticateToken, async (req, res) => {
           middle_name: data.middle_name,
           id_number: data.id_number,
           role: data.role,
-          evaluationStatus: alreadyEvaluatedStatus
+          evaluationStatus: alreadyEvaluatedStatus,
         });
       }
     }
@@ -316,13 +328,11 @@ app.get('/evaluate/ratees-load', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/evaluate/class-dates', authenticateToken, async (req, res) => {
+app.get("/evaluate/class-dates", authenticateToken, async (req, res) => {
   try {
-
-    const classDateQuery = await firebaseDB.collection('evaluationDate')
-      .get();
+    const classDateQuery = await firebaseDB.collection("evaluationDate").get();
     const classDates = [];
-    classDateQuery.forEach(doc => {
+    classDateQuery.forEach((doc) => {
       const data = doc.data();
       classDates.push({
         documentId: doc.id,
@@ -331,25 +341,26 @@ app.get('/evaluate/class-dates', authenticateToken, async (req, res) => {
     });
 
     return res.status(200).json({ classDates });
-
   } catch (error) {
     console.error("Error in /evaluate/load endpoint:", error);
     return res.status(500).json({ message: "Server error encountered." });
   }
 });
 
-app.post('/evaluate/result/save', async (req, res) => {
+app.post("/evaluate/result/save", async (req, res) => {
   try {
     const evaluationResultData = req.body;
 
     //check if evaluation result not exists
     const { rateeId, classDateId, evaluatorId } = evaluationResultData;
-    const alreadyEvaluatedQuery = await firebaseDB.collection('evaluationResult')
-      .where('classDateId', '==', classDateId)
-      .where('evaluatorId', '==', evaluatorId)
-      .where('rateeId', '==', rateeId)
+    const alreadyEvaluatedQuery = await firebaseDB
+      .collection("evaluationResult")
+      .where("classDateId", "==", classDateId)
+      .where("evaluatorId", "==", evaluatorId)
+      .where("rateeId", "==", rateeId)
       .get();
-    if (!alreadyEvaluatedQuery.empty) throw new Error("Evaluation result already exists.");
+    if (!alreadyEvaluatedQuery.empty)
+      throw new Error("Evaluation result already exists.");
 
     const targetCollection = firebaseDB.collection("evaluationResult");
     const insert = await targetCollection.add(evaluationResultData);
@@ -359,14 +370,138 @@ app.post('/evaluate/result/save', async (req, res) => {
     console.error("Error saving evaluation result:", error);
     res.status(500).json({ message: "Server error encountered" });
   }
+});
 
+app.get("/result/load", authenticateToken, async (req, res) => {
+  const { id: currentUserDocId } = req.user;
+
+  try {
+    const classDates = await getClassDates();
+    const evaluationQuestions = await getQuestions();
+    const evaluationRemarks = [];
+
+    // fetch evaluation results for the current user as ratee
+    const evaluationResultsQuery = await firebaseDB
+      .collection("evaluationResult")
+      .where("rateeId", "==", currentUserDocId)
+      .get();
+
+    const evaluationResults = [];
+    evaluationResultsQuery.forEach((doc) => {
+      const data = doc.data();
+      const dateInfo = classDates.find(
+        (date) => date.documentId === data.classDateId
+      );
+      evaluationResults.push({
+        documentId: doc.id,
+        date: dateInfo?.date,
+        ...data,
+      });
+    });
+
+    // group evaluation results by classDateId
+    const groupedByDateResults = evaluationResults.reduce((tempData, item) => {
+      const { classDateId } = item;
+
+      if (!tempData[classDateId]) {
+        tempData[classDateId] = [];
+      }
+
+      // get remarks if any
+      if (item.remarks && item.remarks != '') {
+        evaluationRemarks[classDateId] = evaluationRemarks[classDateId] || [];
+      }
+
+      tempData[classDateId].push(item);
+
+      return tempData;
+    }, {});
+
+    // compute total per criteria for each date
+    /** expected ds
+     averagesByDate = {
+          'dateDocId': {
+            'actual criteria 1': 3.5,
+            'actual criteria 2': 3.5
+          }
+     };
+     */
+    const averagesByDate = {};
+    for (const [key, value] of Object.entries(groupedByDateResults)) {
+      const totals = {};
+      const evaluatorCount = value.length;
+
+      value.forEach((evaluation) => {
+        for (const [criteriaId, score] of Object.entries(evaluation)) {
+          if (typeof score === "number") {
+            if (!totals[criteriaId]) {
+              totals[criteriaId] = (totals[criteriaId] || 0) + score;
+            }
+          }
+        }
+      });
+
+      // Compute averages per criteria
+      /**
+       * Compute averages
+       average = {
+          'criteriaId': averageScore,
+       }
+       */
+      const averagesPerCriteria = {};
+      for (const [criteriaId, totalScore] of Object.entries(totals)) {
+        const criteriaQuestion = evaluationQuestions.find(
+          (q) => q.docId === criteriaId
+        );
+        averagesPerCriteria[criteriaQuestion.text] = (
+          totalScore / evaluatorCount
+        ).toFixed(2);
+      }
+
+      // Compute overall average
+      const averageOverall =
+        Object.values(averagesPerCriteria).reduce(
+          (sum, val) => sum + parseFloat(val),
+          0
+        ) / Object.values(averagesPerCriteria).length;
+
+      //store in variable; key = classDateId
+      averagesByDate[key] = {
+        date: value[0].date,
+        rating: averagesPerCriteria,
+        average: averageOverall.toFixed(2),
+        remarks: evaluationRemarks[key] || [],
+      };
+    }
+
+    /** the expected data structure
+     {
+        "averagesByDate": {
+            "ZalCCyFWhAZSiYfVmPda": {
+                "date": "November 3, 2025",
+                "rating": {
+                    "Communication and Coordination": "4.00",
+                    "Fairness and Conflict Resolution": "4.00",
+                    "Motivation and Accountability": "4.00",
+                    "Leadership and Decision Making": "4.00"
+                },
+                "average": "4.00",
+                "remarks": ["", ""]
+            }
+        }
+      }
+    */
+    return res.status(200).json({ averagesByDate });
+  } catch (error) {
+    console.error("Error in /result/load endpoint:", error);
+    return res.status(500).json({
+      message: "Server error encountered.",
+      error: error.message,
+      userData: req.user
+    });
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
-

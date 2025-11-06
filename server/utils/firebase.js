@@ -5,10 +5,10 @@ import { firebaseDB } from '../firebase.js';
 export const getClassDates = async () => {
     const classDateQuery = await firebaseDB.collection('evaluationDate').get();
     const classDates = [];
-    classDateQuery.forEach((userDoc) => {
-        const data = userDoc.data();
+    classDateQuery.forEach((doc) => {
+        const data = doc.data();
         classDates.push({
-            documentId: userDoc.id,
+            documentId: doc.id,
             date: data.date,
         });
     });
@@ -53,4 +53,24 @@ export const getRatees = async (currentUserData) => {
     });
 
     return ratees;
+}
+
+export const getQuestions = async () => {
+    const questionsQuery = await firebaseDB.collection('questions')
+        .get();
+    const questions = [];
+    questionsQuery.forEach((doc) => {
+        const data = doc.data();
+        questions.push({ docId: doc.id, text: data.text });
+    });
+
+    /** expected data structure
+     questions = [
+      { docId: '', text: ''},
+      { docId: '', text: ''},
+      { docId: '', text: ''},
+       .........
+     ]
+     */
+    return questions;
 }

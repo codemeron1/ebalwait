@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input"
 
 const Login = () => {
   const [userCredentials, setUserCredentials] = useState({ id_number: '', password: '' });
-  // const [error, setError] = useState('');
+  const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -39,8 +39,12 @@ const Login = () => {
         navigate('/rate', { replace: true });
       })
       .catch(() => {
-        // setError('Invalid ID number or password.');
+        setError('Invalid ID number or password.');
         console.error('Login failed');
+        const timeout = setTimeout(() => {
+          setError('');
+          clearTimeout(timeout);
+        }, 3000);
       }).finally(() => {
         setIsLoggingIn(false);
       });
@@ -80,6 +84,7 @@ const Login = () => {
                     required
                   />
                 </Field>
+                {error && <p className="text-sm text-red-600">{error}</p>}
                 <Field>
                   <Button type="submit" disabled={isLoggingIn}>
                     {isLoggingIn ? 'Logging in...' : 'Login'}

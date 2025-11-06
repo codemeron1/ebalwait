@@ -1,4 +1,6 @@
+import { useEffect} from 'react';
 import { Sprout } from 'lucide-react';
+import axios from 'axios';
 
 // --- Mock Data ---
 // In a real app, you'd fetch this data from an API based on the logged-in user.
@@ -42,10 +44,7 @@ interface FeedbackCardProps {
   ratings: Rating[],
   remarks: string
 }
-
-/**
- * A component to display a single anonymous feedback card.
- */
+const apiUrl = import.meta.env.VITE_API_URL;
 const FeedbackCard = ({ result } : {result: FeedbackCardProps}) => {
   const computeAverage = (ratings: Rating[]): Number => {
 
@@ -117,8 +116,26 @@ const FeedbackCard = ({ result } : {result: FeedbackCardProps}) => {
   )
 }
 
-
 const Result = () => {
+  
+  const loadResults = () => {
+    const token = localStorage.getItem('authToken');
+    axios.get(`${apiUrl}/result/load`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    .then( (response) => {
+      console.log('result: ', response.data);
+    })
+    .catch( (error) => {
+      console.error('App error on loadResults(): ', error);
+    });
+  }
+
+  useEffect( () => {
+    loadResults();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background p-2 md:p-6 pb-20">
