@@ -94,8 +94,8 @@ const FeedbackCard = ({ result }: { result: FeedbackCardProps }) => {
 
 const Result = () => {
   const [evaluationResults, setEvaluationResults] = useState<
-    FeedbackCardProps[] | null
-  >(null);
+    FeedbackCardProps[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadResults = () => {
@@ -108,8 +108,8 @@ const Result = () => {
         },
       })
       .then((response) => {
-        console.log("result: ", response.data);
-        setEvaluationResults(response.data.averagesByDate || []);
+        console.log(response.data);
+        setEvaluationResults(response.data.evaluationResults || []);
       })
       .catch((error) => {
         console.error("App error on loadResults(): ", error);
@@ -134,7 +134,7 @@ const Result = () => {
             </div>
           ) : (
             <>
-              {evaluationResults ? (
+              { Object.keys(evaluationResults).length > 0 ? (
                 Object.entries(evaluationResults).map(([date, result]) => (
                   <FeedbackCard key={date.replace(/ /g, "")} result={result} />
                 ))
