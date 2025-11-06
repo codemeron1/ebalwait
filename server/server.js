@@ -457,7 +457,12 @@ app.get("/result/load", authenticateToken, async (req, res) => {
         const criteriaQuestion = evaluationQuestions.find(
           (q) => q.docId === criteriaId
         );
-        console.log('evaluatorCount: ', evaluatorCount, ' totalScore: ', totalScore);
+        console.log(
+          "evaluatorCount: ",
+          evaluatorCount,
+          " totalScore: ",
+          totalScore
+        );
         averagesPerCriteria[criteriaQuestion.text] = (
           totalScore / evaluatorCount
         ).toFixed(2);
@@ -503,6 +508,76 @@ app.get("/result/load", authenticateToken, async (req, res) => {
       message: "Server error encountered.",
       error: error.message,
       userData: req.user,
+    });
+  }
+});
+
+app.get("/api/user/profile", authenticateToken, async (req, res) => {
+  try {
+    const profileData = {
+      id_number: req.user.id_number,
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
+      middle_name: req.user.middle_name,
+      role: req.user.role,
+      section: req.user.section,
+      group: req.user.group,
+      year_level: req.user.year_level,
+    };
+
+    return res.status(200).json({ profileData });
+  } catch (error) {
+    console.error("Error in /api/user/profile endpoint:", error);
+    return res.status(500).json({
+      message: "Server error encountered.",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/user/password-update", authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate request body
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new passwords are required." });
+    }
+
+    // Check if new password meets criteria
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "New password must be at least 8 characters long." });
+    }
+
+    //check if current password is correct
+    const userQuery = await firebaseDB
+      .collection("users")
+      .doc(req.user.id)
+      .get();
+
+    if (!userQuery.exists) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const userData = userQuery.data();
+    const isPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Current password is incorrect." });
+    }
+
+    // Update password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await firebaseDB.collection("users").doc(req.user.id).update({
+      password: hashedNewPassword,
+    });
+
+    return res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Error in /api/user/password-update endpoint:", error);
+    return res.status(500).json({
+      message: "Server error encountered.",
+      error: error.message,
     });
   }
 });

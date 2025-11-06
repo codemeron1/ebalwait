@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Home, ClipboardCheck, Award, LogOut, ShieldUser } from "lucide-react";
+import { Home, ClipboardCheck, Award, LogOut, ShieldUser, Settings } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ModeToggle } from "../mode-toggle";
 
@@ -49,6 +49,11 @@ const Layout1 = () => {
         setPageTitle("My Grades");
         setPageSubTitle("Here's your evaluation results. Keep growing!");
         navigate("/results");
+        break;      
+      case "settings":
+        setPageTitle("Settings");
+        setPageSubTitle("Manage your account settings");
+        navigate("/settings");
         break;
       case "logout":
         const really = confirm("Are you sure you want to logout?");
@@ -70,6 +75,7 @@ const Layout1 = () => {
     { id: "home", icon: Home, label: "Home" },
     { id: "evaluate", icon: ClipboardCheck, label: "Evaluate" },
     { id: "grade", icon: Award, label: "My Grade" },
+    { id: "settings", icon: Settings, label: "Settings" },
     { id: "logout", icon: LogOut, label: "Logout" },
   ];
 

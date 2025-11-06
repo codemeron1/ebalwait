@@ -13,6 +13,7 @@ import Home from './pages/home';
 import RatingView from './pages/rating';
 import RatingQuestionnaire from './pages/rating-questionnaire';
 import ResultsView from './pages/result';
+import SettingsView from './pages/settings';
 import RegisterView from './pages/register';
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
                 <Route path="rate" element={<RatingView />} />
                 <Route path="rate-questionnaire" element={<RatingQuestionnaire />} />
                 <Route path="results" element={<ResultsView />} />
+                <Route path="settings" element={<SettingsView />} />
                 <Route path='register' element={<RegisterView />} />
               </Route>
             </Routes>
