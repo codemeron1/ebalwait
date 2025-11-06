@@ -124,7 +124,7 @@ const EvaluationResultSummaryCard = ({
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(evaluationSummaryData)?.map(([key, result]) => {
                   return (
-                    <div className="p-4 border rounded-md bg-muted/50">
+                    <div key={`eval-${key}`} className="p-4 border rounded-md bg-muted/50">
                       <p className="text-xs text-muted-foreground">
                         {result?.date}
                       </p>

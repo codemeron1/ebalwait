@@ -10,7 +10,7 @@ interface FeedbackCardProps {
   date: string;
   rating: Rating[];
   average: number | string;
-  remarks: string;
+  remarks: string[];
 }
 const apiUrl = import.meta.env.VITE_API_URL;
 
