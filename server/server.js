@@ -206,10 +206,12 @@ app.get("/home/load-data", authenticateToken, async (req, res) => {
     }
 
     //get evaluation summary
-
+    const evaluationSummary = await loadEvaluationResults({ currentUserDocId: currentUserDocumentId });
+   
     return res.status(200).json({
       teamMembers,
       pendingEvaluations,
+      evaluationSummary
     });
   } catch (error) {
     console.error("Error in /home/load-data endpoint:", error);
@@ -372,56 +374,53 @@ app.post("/evaluate/result/save", async (req, res) => {
   }
 });
 
-app.get("/result/load", authenticateToken, async (req, res) => {
-  const { id: currentUserDocId } = req.user;
+const loadEvaluationResults = async ({ currentUserDocId }) => {
+  const classDates = await getClassDates();
+  const evaluationQuestions = await getQuestions();
+  const evaluationRemarks = [];
 
-  try {
-    const classDates = await getClassDates();
-    const evaluationQuestions = await getQuestions();
-    const evaluationRemarks = [];
+  // fetch evaluation results for the current user as ratee
+  const evaluationResultsQuery = await firebaseDB
+    .collection("evaluationResult")
+    .where("rateeId", "==", currentUserDocId)
+    .get();
 
-    // fetch evaluation results for the current user as ratee
-    const evaluationResultsQuery = await firebaseDB
-      .collection("evaluationResult")
-      .where("rateeId", "==", currentUserDocId)
-      .get();
-
-    const evaluationResults = [];
-    evaluationResultsQuery.forEach((doc) => {
-      const data = doc.data();
-      const dateInfo = classDates.find(
-        (date) => date.documentId === data.classDateId
-      );
-      evaluationResults.push({
-        documentId: doc.id,
-        date: dateInfo?.date,
-        ...data,
-      });
+  const evaluationResults = [];
+  evaluationResultsQuery.forEach((doc) => {
+    const data = doc.data();
+    const dateInfo = classDates.find(
+      (date) => date.documentId === data.classDateId
+    );
+    evaluationResults.push({
+      documentId: doc.id,
+      date: dateInfo?.date,
+      ...data,
     });
+  });
 
-    // group evaluation results by classDateId
-    const groupedByDateResults = evaluationResults.reduce((tempData, item) => {
-      const { classDateId } = item;
+  // group evaluation results by classDateId
+  const groupedByDateResults = evaluationResults.reduce((tempData, item) => {
+    const { classDateId } = item;
 
-      if (!tempData[classDateId]) {
-        tempData[classDateId] = [];
+    if (!tempData[classDateId]) {
+      tempData[classDateId] = [];
+    }
+
+    // get remarks if any
+    if (item.remarks && item.remarks != "") {
+      if (!evaluationRemarks[classDateId]) {
+        evaluationRemarks[classDateId] = [];
       }
+      evaluationRemarks[classDateId].push(item.remarks);
+    }
 
-      // get remarks if any
-      if (item.remarks && item.remarks != "") {
-        if (!evaluationRemarks[classDateId]) {
-          evaluationRemarks[classDateId] = [];
-        }
-        evaluationRemarks[classDateId].push(item.remarks);
-      }
+    tempData[classDateId].push(item);
 
-      tempData[classDateId].push(item);
+    return tempData;
+  }, {});
 
-      return tempData;
-    }, {});
-
-    // compute total per criteria for each date
-    /** expected ds
+  // compute total per criteria for each date
+  /** expected ds
      averagesByDate = {
           'dateDocId': {
             'actual criteria 1': 3.5,
@@ -429,62 +428,62 @@ app.get("/result/load", authenticateToken, async (req, res) => {
           }
      };
      */
-    const averagesByDate = {};
-    for (const [key, value] of Object.entries(groupedByDateResults)) {
-      const totals = {};
-      const evaluatorCount = value.length;
+  const averagesByDate = {};
+  for (const [key, value] of Object.entries(groupedByDateResults)) {
+    const totals = {};
+    const evaluatorCount = value.length;
 
-      value.forEach((evaluation) => {
-        for (const [criteriaId, score] of Object.entries(evaluation)) {
-          if (typeof score === "number") {
-            if (!totals[criteriaId]) {
-              totals[criteriaId] = 0;
-            }
-            totals[criteriaId] += score;
+    value.forEach((evaluation) => {
+      for (const [criteriaId, score] of Object.entries(evaluation)) {
+        if (typeof score === "number") {
+          if (!totals[criteriaId]) {
+            totals[criteriaId] = 0;
           }
+          totals[criteriaId] += score;
         }
-      });
+      }
+    });
 
-      // Compute averages per criteria
-      /**
+    // Compute averages per criteria
+    /**
        * Compute averages
        average = {
           'criteriaId': averageScore,
        }
        */
-      const averagesPerCriteria = {};
-      for (const [criteriaId, totalScore] of Object.entries(totals)) {
-        const criteriaQuestion = evaluationQuestions.find(
-          (q) => q.docId === criteriaId
-        );
-        console.log(
-          "evaluatorCount: ",
-          evaluatorCount,
-          " totalScore: ",
-          totalScore
-        );
-        averagesPerCriteria[criteriaQuestion.text] = (
-          totalScore / evaluatorCount
-        ).toFixed(2);
-      }
-
-      // Compute overall average
-      const averageOverall =
-        Object.values(averagesPerCriteria).reduce(
-          (sum, val) => sum + parseFloat(val),
-          0
-        ) / Object.values(averagesPerCriteria).length;
-
-      //store in variable; key = classDateId
-      averagesByDate[key] = {
-        date: value[0].date,
-        rating: averagesPerCriteria,
-        average: averageOverall.toFixed(2),
-        remarks: evaluationRemarks[key] || [],
-      };
+    const averagesPerCriteria = {};
+    for (const [criteriaId, totalScore] of Object.entries(totals)) {
+      const criteriaQuestion = evaluationQuestions.find(
+        (q) => q.docId === criteriaId
+      );
+      console.log(
+        "evaluatorCount: ",
+        evaluatorCount,
+        " totalScore: ",
+        totalScore
+      );
+      averagesPerCriteria[criteriaQuestion.text] = (
+        totalScore / evaluatorCount
+      ).toFixed(2);
     }
 
-    /** the expected data structure
+    // Compute overall average
+    const averageOverall =
+      Object.values(averagesPerCriteria).reduce(
+        (sum, val) => sum + parseFloat(val),
+        0
+      ) / Object.values(averagesPerCriteria).length;
+
+    //store in variable; key = classDateId
+    averagesByDate[key] = {
+      date: value[0].date,
+      rating: averagesPerCriteria,
+      average: averageOverall.toFixed(2),
+      remarks: evaluationRemarks[key] || [],
+    };
+  }
+
+  /** the expected data structure
      {
         "averagesByDate": {
             "ZalCCyFWhAZSiYfVmPda": {
@@ -501,7 +500,14 @@ app.get("/result/load", authenticateToken, async (req, res) => {
         }
       }
     */
-    return res.status(200).json({ averagesByDate });
+  return averagesByDate;
+};
+
+app.get("/result/load", authenticateToken, async (req, res) => {
+  const { id: currentUserDocId } = req.user;
+  try {
+    const evaluationResults = await loadEvaluationResults({ currentUserDocId });
+    return res.status(200).json({ evaluationResults });
   } catch (error) {
     console.error("Error in /result/load endpoint:", error);
     return res.status(500).json({
@@ -541,12 +547,16 @@ app.post("/api/user/password-update", authenticateToken, async (req, res) => {
 
     // Validate request body
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: "Current and new passwords are required." });
+      return res
+        .status(400)
+        .json({ message: "Current and new passwords are required." });
     }
 
     // Check if new password meets criteria
     if (newPassword.length < 8) {
-      return res.status(400).json({ message: "New password must be at least 8 characters long." });
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 8 characters long." });
     }
 
     //check if current password is correct
@@ -560,10 +570,15 @@ app.post("/api/user/password-update", authenticateToken, async (req, res) => {
     }
 
     const userData = userQuery.data();
-    const isPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      userData.password
+    );
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Current password is incorrect." });
+      return res
+        .status(401)
+        .json({ message: "Current password is incorrect." });
     }
 
     // Update password

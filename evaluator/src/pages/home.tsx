@@ -14,23 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const mockEvaluationSummaryData = [
-  {
-    id: 1,
-    date: "Week 1 (Oct 20-26)",
-    rating: 97.65,
-  },
-  {
-    id: 1,
-    date: "Week 1 (Oct 20-26)",
-    rating: 98.0,
-  },
-  {
-    id: 1,
-    date: "Week 1 (Oct 20-26)",
-    rating: 65,
-  },
-];
+
 const PendingEvaluationCard = ({
   evaluationData,
   isDataLoading,
@@ -102,7 +86,7 @@ const PendingEvaluationCard = ({
     </div>
   );
 };
-const EvaluationSummaryCard = ({
+const EvaluationResultSummaryCard = ({
   evaluationSummaryData,
   isDataLoading,
 }: {
@@ -123,7 +107,7 @@ const EvaluationSummaryCard = ({
         </div>
       ) : (
         <>
-          {!evaluationSummaryData ? (
+          {Object.keys(evaluationSummaryData).length === 0 ? (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia>
@@ -138,14 +122,14 @@ const EvaluationSummaryCard = ({
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                {evaluationSummaryData?.map((result) => {
+                {Object.entries(evaluationSummaryData)?.map(([key, result]) => {
                   return (
                     <div className="p-4 border rounded-md bg-muted/50">
                       <p className="text-xs text-muted-foreground">
                         {result?.date}
                       </p>
                       <p className="text-2xl font-bold mt-1">
-                        {Number(result.rating).toFixed(2) || "-"}
+                        {Number(result.average).toFixed(2) || "-"}
                       </p>
                     </div>
                   );
@@ -245,8 +229,8 @@ const Home = () => {
           evaluationData={pendingEvaluations}
           isDataLoading={isLoading}
         />
-        <EvaluationSummaryCard
-          evaluationSummaryData={evaluationSummary || mockEvaluationSummaryData}
+        <EvaluationResultSummaryCard
+          evaluationSummaryData={evaluationSummary}
           isDataLoading={isLoading}
         />
       </div>

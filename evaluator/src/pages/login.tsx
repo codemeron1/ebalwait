@@ -1,25 +1,24 @@
-import axios from 'axios';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 const Login = () => {
-  const [userCredentials, setUserCredentials] = useState({ id_number: '', password: '' });
-  const [error, setError] = useState('');
+  const [userCredentials, setUserCredentials] = useState({
+    id_number: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -28,73 +27,96 @@ const Login = () => {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoggingIn(true);
-    axios.get(`${apiUrl}/user/login`, { params: userCredentials })
-      .then(response => {
+    axios
+      .get(`${apiUrl}/user/login`, { params: userCredentials })
+      .then((response) => {
         const { token } = response.data;
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('userData', JSON.stringify(response.data.user));
-        
-        window.dispatchEvent(new CustomEvent('userDataChanged'));
-        
-        navigate('/rate', { replace: true });
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+        window.dispatchEvent(new CustomEvent("userDataChanged"));
+
+        navigate("/rate", { replace: true });
       })
       .catch(() => {
-        setError('Invalid ID number or password.');
-        console.error('Login failed');
+        setError("Invalid ID number or password.");
+        console.error("Login failed");
         const timeout = setTimeout(() => {
-          setError('');
+          setError("");
           clearTimeout(timeout);
         }, 3000);
-      }).finally(() => {
+      })
+      .finally(() => {
         setIsLoggingIn(false);
       });
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <Card>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-4">
+        {/* Logo */}
+        <div className="flex flex-col items-center">
+          <img className="h-24 w-auto" src="/logo-2.png" alt="E-Balwait Logo" />
+        </div>
+
+        <Card className="shadow-md  border rounded-xl">
           <CardHeader>
-            <CardTitle>Login to your account</CardTitle>
+            <CardTitle className="text-lg">Login to your account</CardTitle>
             <CardDescription>
-              Enter your ID number below to login to your account
+              Enter your credentials to access your dashboard.
             </CardDescription>
           </CardHeader>
+
           <CardContent>
-            <form onSubmit={handleLogin}>
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="idNumber">ID Number</FieldLabel>
-                  <Input
-                    id="idNumber"
-                    type="text"
-                    placeholder="Enter your ID number"
-                    onChange={e => setUserCredentials(prev => ({ ...prev, id_number: e.target.value }))}
-                    required
-                  />
-                </Field>
-                <Field>
-                  <div className="flex items-center">
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    onChange={e => setUserCredentials(prev => ({ ...prev, password: e.target.value }))}
-                    required
-                  />
-                </Field>
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                <Field>
-                  <Button type="submit" disabled={isLoggingIn}>
-                    {isLoggingIn ? 'Logging in...' : 'Login'}
-                  </Button>
-                </Field>
-              </FieldGroup>
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div className="space-y-1">
+                <FieldLabel htmlFor="idNumber">ID Number</FieldLabel>
+                <Input
+                  id="idNumber"
+                  type="text"
+                  placeholder="Enter your ID number"
+                  className="h-11"
+                  onChange={(e) =>
+                    setUserCredentials((prev) => ({
+                      ...prev,
+                      id_number: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <Input
+                  id="password"
+                  type="password"
+                  className="h-11"
+                  placeholder="••••••••"
+                  onChange={(e) =>
+                    setUserCredentials((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+
+              {error && (
+                <p className="text-sm text-red-600 text-center">{error}</p>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full h-11 text-base"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? "Logging in..." : "Login"}
+              </Button>
             </form>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );
