@@ -1,0 +1,15 @@
+- [10/30] Home: Load pending evaluation
+- [10/30] Home: List of group members - roles
+- [10/31] Dark mode theme
+- [10/31] Refactor evaluation result page
+- [10/31] Confirm before logout
+- [11/05] Evaluation result: fetch data from the actual database
+- [10/31] Home page: Finalized layout (used AI)
+- [11/03] Home page: pending evaluation section > fetch data from the actual database
+- [ongoing] Home page: evaluation summary section > fetch data from the actual database
+- [11/01] Require authenticated status for some Routes : disable first
+- [11/01] Mobile responsiveness
+- [11/03] Test live
+- [] Backend: Save token in the database or json file
+- [11/05] Settings page: Add account settings page for updating account - password.
+- [11/05] Evaluation page: Add remarks field (required)
