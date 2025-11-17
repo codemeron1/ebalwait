@@ -10,6 +10,8 @@ import { firebaseDB } from "./firebase.js";
 import { parseCsv } from "./utils/utils.js";
 import { getClassDates, getQuestions, getRatees } from "./utils/firebase.js";
 
+import { loadStudents } from "./instructor.controller.js";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -57,7 +59,6 @@ app.post("/user/register", async (req, res) => {
 app.get("/user/login", async (req, res) => {
   const { id_number, password } = req.query;
 
-  console.log("id_number: ", id_number);
   const targetCollection = firebaseDB.collection("users");
   const validationResult = await targetCollection
     .where("id_number", "==", String(id_number))
@@ -140,11 +141,9 @@ app.post("/user/roles", async (req, res) => {
   try {
     const roles = await readFile("datasets/roles.json", { encoding: "utf-8" });
     const jsonData = JSON.parse(roles);
-    console.log(jsonData);
 
     const targetCollection = firebaseDB.collection("roles");
     for (let data of jsonData?.data) {
-      console.log(data);
       const insert = await targetCollection.add(data);
     }
 
@@ -180,7 +179,6 @@ app.get("/home/load-data", authenticateToken, async (req, res) => {
 
     //check evaluation for each date
     const evaluatorId = req.user?.id;
-
     for (const date of classDates) {
       const classDateId = date?.documentId;
       let pendingRateesCount = 0;
@@ -229,7 +227,6 @@ app.post("/evaluate/criteria", async (req, res) => {
       encoding: "utf-8",
     });
     const jsonData = JSON.parse(criteria);
-    console.log(jsonData);
 
     const targetCollection = firebaseDB.collection("questions");
     for (let data of jsonData?.data) {
@@ -596,6 +593,8 @@ app.post("/api/user/password-update", authenticateToken, async (req, res) => {
     });
   }
 });
+
+app.get("/api/instructor/v1/load", authenticateToken, loadStudents)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
