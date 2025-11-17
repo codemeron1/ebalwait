@@ -108,7 +108,6 @@ const Result = () => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setEvaluationResults(response.data.evaluationResults || []);
       })
       .catch((error) => {

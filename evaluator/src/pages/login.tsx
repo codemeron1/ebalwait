@@ -40,7 +40,6 @@ const Login = () => {
       })
       .catch(() => {
         setError("Invalid ID number or password.");
-        console.error("Login failed");
         const timeout = setTimeout(() => {
           setError("");
           clearTimeout(timeout);

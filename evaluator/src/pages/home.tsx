@@ -206,7 +206,6 @@ const Home = () => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setTeamMembers(response.data?.teamMembers || null);
         setPendingEvaluations(response.data?.pendingEvaluations || null);
         setEvaluationSummary(response.data?.evaluationSummary || null);

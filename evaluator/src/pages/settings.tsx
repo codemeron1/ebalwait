@@ -32,7 +32,6 @@ const Settings: React.FC = () => {
   }, []);
 
   const fetchUserData = async () => {
-    console.log("Fetching user data...");
     try {
       const response = await axios.get(`${apiUrl}/api/user/profile`, {
         headers: {
