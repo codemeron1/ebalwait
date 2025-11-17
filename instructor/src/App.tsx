@@ -1,23 +1,24 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';  
-import { ThemeProvider } from './components/theme-provider';
+import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./components/theme-provider";
 
-import Layout1 from './layout/layout1';
+import Layout1 from "./layout/layout1";
+import Home from "./pages/home";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <BrowserRouter>
-      <ThemeProvider defaultTheme='dark' storageKey='vite-ui-them'>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-them">
         <Routes>
-          <Route path='/' element={<Layout1 />}>
-            
+          <Route path="/" element={<Layout1 />}>
+            <Route path="home" element={<Home />} />
           </Route>
         </Routes>
       </ThemeProvider>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
